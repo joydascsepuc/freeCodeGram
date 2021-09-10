@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\newUserRegistraionMail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,9 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\PostsController::class, 'index']);
 
 Auth::routes();
 
@@ -28,3 +27,9 @@ Route::patch('/profile/{user}', [App\Http\Controllers\ProfilesController::class,
 Route::get('/p/create',[App\Http\Controllers\PostsController::class, 'create']);
 Route::post('/p',[App\Http\Controllers\PostsController::class, 'store']);
 Route::get('/p/{id}',[App\Http\Controllers\PostsController::class, 'show']);
+
+Route::post('/follow/{user}', [App\Http\Controllers\FollowsController::class, 'store']);
+
+Route::get('/email', function(){
+    return new newUserRegistraionMail();
+});

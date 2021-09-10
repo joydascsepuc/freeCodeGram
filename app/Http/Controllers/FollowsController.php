@@ -3,33 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
+use App\Models\User;
 
-use App\Models\Post;
-
-class PostsController extends Controller
+class FollowsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }   
-
-
     public function index()
     {
-        $users = auth()->user()->following()->pluck('profiles.user_id');
-        $posts = Post::whereIn('user_id',$users)->with('user')->latest()->paginate(5);
-        
-        return view('posts.index', [
-            'posts' => $posts
-        ]);
-        //dd($posts);
+        //
     }
 
     /**
@@ -39,7 +30,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        //
     }
 
     /**
@@ -48,29 +39,9 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(User $user)
     {
-        $data = $request->validate([
-
-            'caption' => ['required','string'],
-            'image' => ['required','image']
-
-        ]);
-        
-        $imagePath = request('image')->store('uploads','public');
-
-        $image = Image::make(public_path("storage/{$imagePath}"))->fit(1200, 1200);
-        $image->save();
-
-
-        auth()->user()->posts()->create([
-
-            'caption' => $data['caption'],
-            'image' => $imagePath
-
-        ]);
-
-        return redirect('/profile/'.auth()->user()->id);
+        return auth()->user()->following()->toggle($user->profile);
     }
 
     /**
@@ -79,11 +50,9 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $id)
+    public function show($id)
     {
-        return view('posts.show', [
-            'post' => $id,
-        ]);
+        //
     }
 
     /**
